@@ -4,6 +4,8 @@ const morgan = require('morgan')
 const layout = require('../views/layout.js')
 const PORT = 3000
 const { db, Page, User } = require('../models');
+const userRoutes = require('../routes/user.js')
+const wikiRoutes =  require('../routes/wiki.js')
 
 app.use(morgan('dev'))
 
@@ -16,6 +18,12 @@ db.authenticate().
 then(() => {
   console.log('connected to the database');
 })
+
+app.use('/wiki', wikiRoutes)
+app.use('/user', userRoutes)
+
+
+
 
 
 app.get('/', (req, res) => {
