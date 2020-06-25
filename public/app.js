@@ -3,6 +3,7 @@ const app = express()
 const morgan = require('morgan')
 const layout = require('../views/layout.js')
 const PORT = 3000
+const { db, Page, User } = require('../models');
 
 app.use(morgan('dev'))
 
@@ -11,6 +12,11 @@ app.use(express.static(__dirname + '/public'))
 app.use(express.urlencoded({ extended: false }));
 //const bodyParser = require('body-parser')
 
+db.authenticate().
+then(() => {
+  console.log('connected to the database');
+})
+
 
 app.get('/', (req, res) => {
     let log = console.log("hello world")
@@ -18,6 +24,20 @@ app.get('/', (req, res) => {
     res.send(page);
 })
 
-app.listen(PORT, () => {
-    console.log(`App listening in port ${PORT}`)
-})
+const init = async () => {
+    try{
+        await Page.sync();
+        await User.sync();
+        await db.sync();
+
+        app.listen(PORT, () => {
+            console.log(`App listening in port ${PORT}`)
+        })
+
+    }catch(e) {
+        console.log('Not working', e)
+    }
+}
+
+init();
+
